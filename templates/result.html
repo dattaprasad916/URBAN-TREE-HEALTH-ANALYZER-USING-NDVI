@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NDVI Result</title>
+</head>
+<body style="font-family:sans-serif; text-align:center; margin-top:50px;">
+    <h1>🌿 Tree Health Status: {{ status }}</h1>
+
+    <h3>NDVI Heatmap</h3>
+    <img src="{{ url_for('static', filename=ndvi_image) }}" alt="NDVI Result" width="500"><br><br>
+
+    <h3>Health Percentages:</h3>
+    <p>Healthy: {{ health_percent['Healthy'] }}%</p>
+    <p>Moderate: {{ health_percent['Moderate'] }}%</p>
+    <p>Stressed: {{ health_percent['Stressed'] }}%</p>
+
+    <h3>NDVI Histogram</h3>
+    <img src="{{ url_for('static', filename=hist_image) }}" alt="NDVI Histogram" width="500"><br><br>
+
+    <h3>Health Distribution Bar Chart</h3>
+    <img src="{{ url_for('static', filename=bar_image) }}" alt="Health Bar Chart" width="500"><br><br>
+
+    <a href="/">🔁 Upload Another Image</a>
+</body>
+</html>
