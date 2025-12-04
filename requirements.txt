@@ -1,7 +1,7 @@
 streamlit==1.25.0
 numpy==1.26.4
 opencv-python-headless==4.8.1.78
-pillow<10
+pillow==9.4.0
 matplotlib==3.10.7
 scipy==1.16.2
 scikit-learn==1.7.2
