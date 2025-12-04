@@ -1,7 +1,9 @@
 ﻿streamlit==1.25.0
 numpy==1.26.4
 opencv-python-headless==4.8.1.78
-Pillow==9.5.0
+# Allow pip to pick a compatible Pillow wheel rather than forcing a version that may need a build
+Pillow<10,>=7.1.0
 matplotlib==3.10.7
 scipy==1.16.2
 scikit-learn==1.7.2
+
