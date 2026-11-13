@@ -94,3 +94,18 @@ Thumbs.db
 models/*.pkl
 models/*.h5
 models/*.pth
+
+# YOLO / ML model weights at root level
+*.pt
+*.ckpt
+*.pth
+
+# Temporary virtual environments
+.tmp_venv/
+
+# Uploaded and processed images (generated at runtime)
+static/raw_images/
+static/processed/
+
+# pip logs
+pip_install_log.txt

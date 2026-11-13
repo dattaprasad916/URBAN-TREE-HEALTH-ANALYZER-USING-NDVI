@@ -1,168 +1,101 @@
 # 🌳 Urban Tree Health Monitor
 
-A Streamlit-based web application for analyzing tree and vegetation health using NDVI (Normalized Difference Vegetation Index) calculations from RGB images.
+An advanced computer-vision and spectral index platform for evaluating urban forest vitality, canopy density, and foliar stress from standard high-resolution photography.
 
-## 🎯 Features
+---
 
-- **Interactive Web Interface**: Easy-to-use Streamlit interface for image uploads
-- **NDVI Analysis**: Simulates near-infrared data from RGB images to calculate vegetation health
-- **Health Classification**: Categorizes vegetation into Healthy, Moderate, and Stressed categories
-- **Visual Analysis**: 
-  - NDVI heatmaps with color-coded legends
-  - Distribution histograms
-  - Health percentage bar charts
-- **Detailed Statistics**: Comprehensive NDVI statistics and technical details
-- **Real-time Processing**: Instant analysis and visualization of uploaded images
+## 🎯 Key Features
+
+- **Multi-Index Spectral Analysis**:
+  - **Simulated NDVI**: Near-Infrared simulation from RGB color spaces.
+  - **VARI (Visible Atmospherically Resistant Index)**: Peer-reviewed index (*Gitelson et al., 2002*) designed specifically for RGB sensors to estimate green vegetation fraction while reducing atmospheric variability.
+  - **GLI (Green Leaf Index)**: Peer-reviewed index (*Louhaichi et al., 2001*) that separates green foliage from dead wood, soil, and urban backgrounds.
+- **AI Gatekeeper (YOLOv11-nano)**:
+  - Deep learning object detector automatically identifies and rejects non-target photos (vehicles, pedestrians, urban infrastructure).
+  - Gracefully falls back to computer-vision morphological analysis if deep-learning weights are offline.
+- **Multi-Stage Morphological Vegetation Detector**:
+  - Detects green leaves, autumn foliage, bare winter branches, and vertical trunk structures.
+- **Interactive Heatmap Overlay**:
+  - Adjustable alpha transparency slider (0% to 100%) blends false-colour spectral heatmaps directly over the real tree photograph, allowing arborists to inspect exactly which branches or canopy regions are stressed.
+- **Comparative & Seasonal Analysis**:
+  - Upload baseline and current images side-by-side to track canopy recovery, seasonal senescence, or post-treatment vigor deltas ($\Delta$).
+- **Report & Data Export**:
+  - One-click export of structured **JSON Assessment Reports** (for GIS / arborist inventories) and formatted **Text Summaries**.
+- **Automated Pytest Suite**:
+  - Comprehensive unit tests covering vegetation masking, index calculations, and report generation.
+
+---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 1. Installation
 
-- Python 3.7 or higher
-- pip package manager
+```bash
+# Clone the repository and navigate into the project directory
+git clone https://github.com/your-username/tree-health.git
+cd tree-health
 
-### Installation
+# Create and activate a Python virtual environment (Python 3.10+)
+python -m venv venv
 
-1. **Clone or navigate to the project directory:**
-   ```bash
-   cd "C:\Users\acer\Desktop\tree health"
-   ```
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# Linux / macOS:
+source venv/bin/activate
 
-2. **Activate the virtual environment (if not already active):**
-   ```bash
-   .\venv\Scripts\Activate.ps1
-   ```
+# Install dependencies
+pip install -r requirements.txt
+```
 
-3. **Install required packages:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 2. Running the Application
 
-### Running the Application
+```bash
+streamlit run streamlit_app.py
+```
 
-1. **Start the Streamlit application:**
-   ```bash
-   streamlit run streamlit_app.py
-   ```
+Open your browser to `http://localhost:8501`.
 
-2. **Open your web browser** and navigate to the URL shown in the terminal (typically `http://localhost:8501`)
+### 3. Running Unit Tests
 
-3. **Upload an image** of trees or vegetation using the file uploader
+```bash
+pytest tests/ -v
+```
 
-4. **View the analysis results** including:
-   - NDVI heatmap visualization
-   - Overall health status
-   - Detailed health percentages
-   - Statistical analysis and charts
+---
 
-## 📊 Understanding NDVI
+## 📊 Scientific Remote Sensing Indices
 
-**NDVI (Normalized Difference Vegetation Index)** is a measure of vegetation health:
+| Index | Formula | Primary Purpose | Reference |
+|---|---|---|---|
+| **VARI** | $\frac{G - R}{G + R - B}$ | Foliar greenness & canopy fraction from standard RGB cameras | *Gitelson et al. (2002)* |
+| **GLI** | $\frac{2G - R - B}{2G + R + B}$ | Discriminating active leaves from bare ground, bark, and dead branches | *Louhaichi et al. (2001)* |
+| **Simulated NDVI** | $\frac{\text{NIR}_{\text{sim}} - R}{\text{NIR}_{\text{sim}} + R}$ | Approximation of classic multispectral NIR absorption/scattering | Empirical approximation |
 
-- **Healthy** (NDVI > 0.55): Dense, healthy vegetation 🌿
-- **Moderate** (0.35 < NDVI ≤ 0.55): Moderate vegetation health 🌾
-- **Stressed** (NDVI ≤ 0.35): Sparse or stressed vegetation 🍂
+---
 
-### How it Works
-
-1. **NIR Simulation**: The application simulates near-infrared data using: `NIR = 0.6 × Red + 0.4 × Green`
-2. **NDVI Calculation**: Computes NDVI using: `NDVI = (NIR - Red) / (NIR + Red)`
-3. **Visualization**: Maps NDVI values to colors for easy interpretation
-
-## 📁 Project Structure
+## 📁 Modular Architecture
 
 ```
 tree health/
-├── streamlit_app.py      # Main Streamlit application
-├── app.py               # Original Flask application (legacy)
-├── web_app.py          # Alternative Flask implementation (legacy)
-├── requirements.txt    # Python dependencies
-├── README.md          # This file
+├── streamlit_app.py          # Modern, responsive multi-tab Streamlit dashboard
 ├── utils/
-│   └── ndvi.py        # NDVI calculation utilities
-├── templates/         # HTML templates (for Flask - not used in Streamlit)
-│   ├── index.html
-│   └── result.html
-├── static/           # Static files and processed images
-│   ├── raw_images/   # Uploaded images
-│   └── processed/    # Generated outputs
-├── models/          # Directory for ML models (future use)
-└── venv/           # Python virtual environment
+│   ├── detection.py          # YOLOv11 object detection & image gating
+│   ├── vegetation.py         # Morphological vegetation & tree structure filters
+│   ├── indices.py            # Spectral index engine (NDVI, VARI, GLI)
+│   ├── ndvi.py               # Core simulated NIR & NDVI math
+│   ├── visualization.py      # Heatmaps, custom palettes, alpha overlays, and charts
+│   └── export.py             # JSON and text arborist assessment reports
+├── tests/
+│   ├── __init__.py
+│   ├── test_ndvi.py          # Core NDVI calculation & classification tests
+│   └── test_new_features.py  # Tests for VARI, GLI, overlays, and export routines
+├── requirements.txt          # Pinned, tested dependencies
+├── .gitignore                # Excludes runtime outputs, caches, and weight files
+└── README.md
 ```
 
-## 🔧 Technical Details
+---
 
-### Dependencies
+## 🤝 License
 
-- **Streamlit**: Web application framework
-- **OpenCV**: Image processing and computer vision
-- **NumPy**: Numerical computing
-- **Matplotlib**: Plotting and visualization
-- **Pillow**: Image handling
-- **Flask**: Web framework (kept for compatibility)
-
-### Key Functions
-
-- `simulate_nir()`: Simulates NIR channel from RGB image
-- `compute_ndvi()`: Calculates NDVI from RGB and NIR data
-- `create_ndvi_visualization()`: Generates color-coded NDVI heatmaps
-- `calculate_health_stats()`: Computes health percentages and classifications
-
-## 🎨 Features Overview
-
-### Main Interface
-- Clean, intuitive file upload interface
-- Side panel with NDVI information and color legend
-- Responsive design that works on different screen sizes
-
-### Analysis Results
-- **Original vs NDVI**: Side-by-side comparison of original and analyzed images
-- **Health Status**: Color-coded overall health assessment
-- **Statistics**: Mean NDVI, pixel counts, and distribution metrics
-- **Interactive Charts**: Histogram and bar chart visualizations
-- **Technical Details**: Expandable section with detailed statistics
-
-### Image Processing
-- Supports PNG, JPG, JPEG, and WEBP formats
-- Automatic color space conversion
-- Error handling for invalid images
-- Real-time processing with progress indicators
-
-## 🚫 Migration from Flask
-
-This project has been migrated from Flask to Streamlit for better user experience:
-
-- **Before**: Flask with HTML templates and static file serving
-- **After**: Streamlit with interactive widgets and real-time updates
-
-The original Flask files (`app.py` and `web_app.py`) are preserved for reference.
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Import Errors**: Make sure all dependencies are installed: `pip install -r requirements.txt`
-2. **File Upload Issues**: Ensure uploaded images are valid and in supported formats
-3. **Display Issues**: Try refreshing the browser or restarting the Streamlit server
-
-### Performance Tips
-
-- For large images, processing may take longer
-- Close unused browser tabs to free up memory
-- Use images with reasonable resolution (< 2MB recommended)
-
-## 📈 Future Enhancements
-
-- Integration of actual multispectral image data
-- Machine learning models for disease detection
-- Batch processing capabilities
-- Historical analysis and comparison features
-- Export functionality for reports
-
-## 🤝 Contributing
-
-Feel free to submit issues, fork the repository, and create pull requests for improvements.
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+This project is open-source under the MIT License.

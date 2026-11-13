@@ -1,8 +1,18 @@
+"""
+utils/ndvi.py
+~~~~~~~~~~~~~
+NDVI (Normalized Difference Vegetation Index) computation utilities for the
+Urban Tree Health Monitor.
+
+NOTE: This module uses *simulated* NIR (Near-Infrared) data derived from RGB
+channels. Real multispectral cameras produce true NIR data; here NIR is
+approximated from colour channel relationships. Results correlate with
+vegetation greenness, not with actual chlorophyll reflectance.
+"""
 # utils/ndvi.py
 import cv2
 import numpy as np
 from scipy import ndimage
-from sklearn.cluster import KMeans
 
 def create_vegetation_mask(image, method='green_threshold'):
     """
@@ -76,6 +86,8 @@ def simulate_nir_advanced(image):
     Advanced NIR simulation that better distinguishes vegetation health.
     Uses multiple approaches to simulate NIR reflectance.
     """
+    if image is None or image.size == 0:
+        raise ValueError("simulate_nir_advanced: image must be a non-empty numpy array")
     if len(image.shape) == 3:
         # Convert to RGB if needed
         if image.shape[2] == 3:
@@ -158,7 +170,7 @@ def compute_ndvi_advanced(rgb_image, nir_channel=None, return_raw=False):
 
     # Extract red channel (assume BGR input)
     if len(rgb_image.shape) == 3:
-        # BGR -> red is index 2
+        # Input is BGR (OpenCV convention): channel 0=Blue, 1=Green, 2=Red
         red_channel = rgb_image[:, :, 2]
     else:
         red_channel = rgb_image
@@ -220,7 +232,7 @@ def classify_vegetation_health(ndvi_stats, vegetation_percentage_threshold=5.0):
     mean_ndvi = ndvi_stats['mean']
     std_ndvi = ndvi_stats['std']
 
-    if mean_ndvi > 0.10:
+    if mean_ndvi > 0.10:  # Raw NDVI thresholds (simulated NIR; not equivalent to true multispectral NDVI)
         status = 'Healthy'
         icon = '🌿'
         color = 'green'
